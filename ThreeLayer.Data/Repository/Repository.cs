@@ -17,20 +17,23 @@ namespace ThreeLayer.Data.Repository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public void Add(TEntity entity)
+        public TEntity Add(TEntity entity)
         {
             var result = _dbSet.Add(entity);
             _context.SaveChanges();
 
             Console.WriteLine($"Add result: {result}");
+            return result.Entity;
         }
 
-        public async Task AddAsync(TEntity entity)
+        public async Task<TEntity> AddAsync(TEntity entity)
         {
             var result = _dbSet.Add(entity);
             await _context.SaveChangesAsync();
 
             Console.WriteLine($"Add result: {result}");
+
+            return result.Entity;
         }
 
         public void Dispose()
@@ -82,6 +85,19 @@ namespace ThreeLayer.Data.Repository
             _dbSet.Update(entity);
             var result = await _context.SaveChangesAsync();
             Console.WriteLine($"Update result: {result}");
+        }
+
+        protected virtual async Task HandleConcurrencyExceptionAsync(DbUpdateConcurrencyException ex, TEntity entity)
+        {
+            var entry = ex.Entries.Single();
+
+            var databaseValues = await entry.GetDatabaseValuesAsync();
+            if (databaseValues == null)
+            {
+                throw new Exception("The entity you attempted to update was deleted by another user.");
+            }
+
+            throw new DbUpdateConcurrencyException("A concurrency conflict occurred.", ex);
         }
     }
 }

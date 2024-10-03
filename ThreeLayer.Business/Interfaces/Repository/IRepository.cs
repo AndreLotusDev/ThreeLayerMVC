@@ -5,8 +5,8 @@ namespace ThreeLayer.Business.Interfaces.Repository
 {
     public interface IRepository<TEntity> : IDisposable where TEntity : Entity
     {
-        void Add(TEntity entity);
-        Task AddAsync(TEntity entity);
+        TEntity Add(TEntity entity);
+        Task<TEntity> AddAsync(TEntity entity);
         TEntity GetById(Guid id);
         Task<TEntity> GetByIdAsync(Guid id);
         List<TEntity> GetAll();

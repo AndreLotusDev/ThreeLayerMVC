@@ -1,0 +1,5 @@
+CREATE COLLATION IF NOT EXISTS "ci_ai_collation" (
+  PROVIDER = icu,
+  LOCALE = 'und-u-ks-level2',
+  DETERMINISTIC = FALSE
+);
